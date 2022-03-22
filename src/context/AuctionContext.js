@@ -4,9 +4,8 @@ const AuctionContext = createContext();
 
 export const AuctionProvider = ({ children }) => {
     
-    // Condition to be faöse when loading is done.
+    // Condition to be false when loading is done.
     const [isLoading, setIsLoading] = useState (true);
-<<<<<<< Updated upstream
     const [bids, setBids] = useState ([]);
     const [auctions, setAuctions] = useState([]);
 
@@ -15,7 +14,17 @@ export const AuctionProvider = ({ children }) => {
         let cloneObj = JSON.parse(JSON.stringify(object));
         return cloneObj;
     }
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
+    const fetchProfile = async () =>{
+        const response = await fetch("/users");
+        const data = await response.json();
+        
+        setUser(data);
+        setIsLoading(false);
+    }
   
     // Getter / Setter auction object
     const [bid, setBid] = useState({
@@ -64,41 +73,23 @@ export const AuctionProvider = ({ children }) => {
             body: JSON.stringify(aUser),
         });
 
-=======
     const [users, setUser] = useState([]);
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+   
 
-    const fetchProfile = async () =>{
-        const response = await fetch("/users");
-        const data = await response.json();
-        
-        setUser(data);
-        setIsLoading(false);
->>>>>>> Stashed changes
-    }
-    return ( <AuctionContext.Provider
+    return ( 
+    <AuctionContext.Provider
         value={{
-<<<<<<< Updated upstream
             bid,        // bid object
             auction,    // auction object
             profile,    // profile object
-            user,       // user object
+            users,       // user object
             createNew,  // Hardcopy json object
-            addUser,    // AddUser function
+            addUser,
+                // AddUser function
             isLoading
-=======
-            isLoading,
-            users,
-            fetchProfile
-           
->>>>>>> Stashed changes
         }}
         >
             {children}
-        </AuctionContext.Provider> );
-}
- 
-export default AuctionContext;
+    </AuctionContext.Provider>)
+    }}
