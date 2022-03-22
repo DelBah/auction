@@ -1,20 +1,42 @@
-import { cloneElement, createContext, useState } from "react";
+import { createContext, useState } from "react";
+
 const AuctionContext = createContext();
 
 export const AuctionProvider = ({ children }) => {
     
-    // Conditioen to be faöse when loading is done.
+    // Condition to be faöse when loading is done.
     const [isLoading, setIsLoading] = useState (true);
-    
-    // Getter / Setter user object
-    const [user, setUser] = useState({
+    const [bids, setBids] = useState ([]);
+    const [auctions, setAuctions] = useState([]);
+
+    // Deep copy / clone a json object, creates and returns an identical JSON object that was passed in.
+    function createNew(object){
+        let cloneObj = JSON.parse(JSON.stringify(object));
+        return cloneObj;
+    }
+
+  
+    // Getter / Setter auction object
+    const [bid, setBid] = useState({
+        bidId: 0,
         userId: 0,
-        email: "",
-        password: "",
-        profile: {},
-        auctions: [{}]
+        auctionId: 0,
+        bidAmount: 0,
+        timeStamp: 0
     });
     
+    // Getter / Setter auction object
+    const [auction, setAuction] = useState({
+        auctionId: 0,
+        userId: 0,
+        bids: [],  // Change to bidId for relationship instead of aggregation
+        startPrice: 0,
+        endPrice: 0,
+        productName: "",
+        productInfo: "",
+        productImgURL: ""
+    });
+   
     // Getter / Setter profile object
     const [profile, setProfile] = useState({
         userId: 0,
@@ -23,37 +45,33 @@ export const AuctionProvider = ({ children }) => {
         address: "",
     }); 
     
-    // Getter / Setter auction object
-    const [bid, setBid] = useState({
-        bidId: 0,
+    // Getter / Setter user object
+    const [user, setUser] = useState({
         userId: 0,
-        auctionId: 0,
-        bidAmount: 0,
-        timeStamp: 0
-    })
-    let bid2 = cloneElement(bid);
-    bid2.auctionId = 1;
-    console.log(bid, bid2);
-
-    // Getter / Setter auction object
-    const [auction, setAuction] = useState({
-        auctionId: 0,
-        userId: 0,
-        bids: [{bid}],
-        startPrice: 0,
-        endPrice: 0,
-        productName: "Dummy Product",
-        productInfo: "Dummy Info",
-        productImgURL: "Dummy URL"
+        email: "",
+        password: "",
+        profile: {}, 
+        auctions: []  
     });
+    
+    const addUser = async (aUser) => {
+        const res = await fetch("/user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(aUser),
+        });
 
-    const test = () => {
-        setUser({email: "bjorn.milebjork@gmail.com", password: "123", profile: {profile}, auctions: [auction]});
     }
-
     return ( <AuctionContext.Provider
         value={{
-            user,
+            bid,        // bid object
+            auction,    // auction object
+            profile,    // profile object
+            user,       // user object
+            createNew,  // Hardcopy json object
+            addUser,    // AddUser function
             isLoading
         }}
         >
